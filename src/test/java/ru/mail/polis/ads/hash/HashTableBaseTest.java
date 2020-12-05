@@ -38,12 +38,12 @@ class HashTableBaseTest {
             return Objects.hash(value);
         }
     }
-    
+
     HashTable<String, String> newTable() {
         // Use implementation
         return new HashTableImpl<>();
     }
-    
+
     HashTable<Key, String> newStrangeKeyTable() {
         // Use implementation
         return new HashTableImpl<>();
@@ -209,21 +209,21 @@ class HashTableBaseTest {
 
         assertNull(table.get("1"));
 
-        table.put("1", "testStringValue3");
-        assertEquals(table.get("1"), "testStringValue3");
+        table.put(new String("1"), "testStringValue3");
+        assertEquals(table.get(new String("1")), "testStringValue3");
 
-        table.put("1", "testStringValue4");
+        table.put(new String("1"), "testStringValue4");
         assertEquals(table.get("1"), "testStringValue4");
 
-        table.put("1", "testStringValue2");
-        assertEquals(table.get("1"), "testStringValue2");
+        table.put(new String("1"), "testStringValue2");
+        assertEquals(table.get(new String("1")), "testStringValue2");
 
-        table.put("7", "testStringValue5");
-        assertEquals(table.get("7"), "testStringValue5");
-        assertEquals(table.get("1"), "testStringValue2");
+        table.put(new String("7"), "testStringValue5");
+        assertEquals(table.get(new String("7")), "testStringValue5");
+        assertEquals(table.get(new String("1")), "testStringValue2");
 
-        table.remove("7");
-        assertNull(table.get("7"));
+        table.remove(new String("7"));
+        assertNull(table.get(new String("7")));
     }
 
     @Test
@@ -237,7 +237,7 @@ class HashTableBaseTest {
             reference.put(key, value);
         }
         assertEquals(reference.size(), table.size());
-        for (Map.Entry<Key, String> entry: reference.entrySet()) {
+        for (Map.Entry<Key, String> entry : reference.entrySet()) {
             assertEquals(entry.getValue(), table.get(new Key(entry.getKey().value)));
         }
     }
@@ -253,7 +253,7 @@ class HashTableBaseTest {
             reference.put(key, value);
         }
         assertEquals(reference.size(), table.size());
-        for (Map.Entry<Key, String> entry: reference.entrySet()) {
+        for (Map.Entry<Key, String> entry : reference.entrySet()) {
             assertEquals(entry.getValue(), table.get(new Key(entry.getKey().value)));
         }
     }

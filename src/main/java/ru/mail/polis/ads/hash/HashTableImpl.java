@@ -3,15 +3,13 @@ package ru.mail.polis.ads.hash;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-
 public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
-    private ArrayList<Pair> bucketArray;
+    private Pair<Key, Value>[] bucketArray;
     private int currentCapacity;
     private int size;
 
-    private class Pair {
-        private Pair next;
+    private static class Pair<Key, Value> {
+        private Pair<Key, Value> next;
         private Value value;
         private final Key key;
 
@@ -21,18 +19,19 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public HashTableImpl() {
         currentCapacity = 16;
-        bucketArray = new ArrayList<>();
+        bucketArray = new Pair[currentCapacity];
         for (int i = 0; i < currentCapacity; i++) {
-            bucketArray.add(null);
+            bucketArray[i] = null;
         }
     }
 
     @Nullable
     @Override
     public Value get(@NotNull Key key) {
-        Pair head = bucketArray.get(getHash(key));
+        Pair<Key, Value> head = bucketArray[getHash(key)];
         while (head != null) {
             if (head.key.equals(key)) {
                 return head.value;
@@ -42,10 +41,11 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void put(@NotNull Key key, @NotNull Value value) {
         int bucketIndex = getHash(key);
-        Pair head = bucketArray.get(bucketIndex);
+        Pair<Key, Value> head = bucketArray[bucketIndex];
         while (head != null) {
             if (head.key.equals(key)) {
                 head.value = value;
@@ -54,19 +54,19 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
             head = head.next;
         }
         size++;
-        head = bucketArray.get(bucketIndex);
-        Pair newPair = new Pair(key, value);
+        head = bucketArray[bucketIndex];
+        Pair<Key, Value> newPair = new Pair<>(key, value);
         newPair.next = head;
-        bucketArray.set(bucketIndex, newPair);
+        bucketArray[bucketIndex] = newPair;
         if ((double) size / currentCapacity >= 0.75) {
-            ArrayList<Pair> temp = bucketArray;
-            bucketArray = new ArrayList<>();
+            Pair<Key, Value>[] temp = bucketArray;
             currentCapacity *= 2;
+            bucketArray = new Pair[currentCapacity];
             size = 0;
             for (int i = 0; i < currentCapacity; i++) {
-                bucketArray.add(null);
+                bucketArray[i] = null;
             }
-            for (Pair pair : temp) {
+            for (Pair<Key, Value> pair : temp) {
                 while (pair != null) {
                     put(pair.key, pair.value);
                     pair = pair.next;
@@ -78,8 +78,8 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
     @Nullable
     @Override
     public Value remove(@NotNull Key key) {
-        Pair head = bucketArray.get(getHash(key));
-        Pair prev = null;
+        Pair<Key, Value> head = bucketArray[getHash(key)];
+        Pair<Key, Value> prev = null;
         while (head != null) {
             if (head.key.equals(key)) {
                 break;
@@ -94,7 +94,7 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
         if (prev != null) {
             prev.next = head.next;
         } else {
-            bucketArray.set(getHash(key), head.next);
+            bucketArray[getHash(key)] = head.next;
         }
         return head.value;
     }
@@ -110,6 +110,6 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
     }
 
     private int getHash(Object key) {
-        return key.hashCode() % currentCapacity;
+        return Math.abs(key.hashCode() % currentCapacity);
     }
 }
