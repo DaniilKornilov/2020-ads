@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+//https://www.e-olymp.com/ru/submissions/7982076
+
 public class Task1 {
     private static ArrayList<ArrayList<Integer>> graph;
     private static final ArrayList<Integer> top = new ArrayList<>();
@@ -32,11 +34,6 @@ public class Task1 {
     private static void solve(final FastScanner in, final PrintWriter out) {
         int n = in.nextInt();
         int m = in.nextInt();
-
-        if (m <= n) {
-            out.println(-1);
-            return;
-        }
 
         graph = new ArrayList<>();
         used = new int[n + 1];
